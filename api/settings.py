@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
@@ -25,7 +26,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "djoser",
     "corsheaders",
-    "accounts"
+    "accounts",
+    "events",
 ]
 
 MIDDLEWARE = [
@@ -43,8 +45,12 @@ MIDDLEWARE = [
 AUTH_USER_MODEL = "accounts.User"
 
 CORS_ALLOWED_ORIGINS = [
+    "http://*",
+    "https://*",
+    # "*",
     "http://localhost:5173",
-    # "http://127.0.0.1:9000",
+    # "http://192.168.116.208:5173"
+    # # "http://127.0.0.1:9000",
 ]
 
 CORS_ALLOW_METHODS = (
@@ -62,8 +68,11 @@ REST_FRAMEWORK = {
     ),
 }
 
+
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
 }
 
 ROOT_URLCONF = 'api.urls'
