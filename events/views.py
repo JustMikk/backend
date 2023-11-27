@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from rest_framework import viewsets, request
 from rest_framework.permissions import IsAdminUser, BasePermission, IsAuthenticated
@@ -15,6 +16,24 @@ class SuperUserCheckView(APIView):
             request.user.is_authenticated and request.user.is_superuser
         )
         return Response({'is_superuser': is_superuser})
+
+
+class TotalMember(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        User = get_user_model()
+        total = User.objects.all().filter(passed=True).count()
+        return Response({'total': total})
+
+
+class TotalNewMember(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        User = get_user_model()
+        total = User.objects.all().filter(passed=False).count()
+        return Response({'total': total})
 
 
 class IsPassedUser(BasePermission):
