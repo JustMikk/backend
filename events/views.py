@@ -1,10 +1,20 @@
 from django.core.exceptions import PermissionDenied
-from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, BasePermission
-from .models import Event
-from .serializers import EventSerializer
+from rest_framework import viewsets, request
+from rest_framework.permissions import IsAdminUser, BasePermission, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Event, Announcement
+from .serializers import EventSerializer, AnnouncementSerializer
 
-# Create your views here.
+
+class SuperUserCheckView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        is_superuser = (
+            request.user.is_authenticated and request.user.is_superuser
+        )
+        return Response({'is_superuser': is_superuser})
 
 
 class IsPassedUser(BasePermission):
@@ -25,3 +35,26 @@ class EventViewSet(viewsets.ModelViewSet):
             serializer.save()
         else:
             raise PermissionDenied("Only admins can create events")
+
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.all().order_by('-id')
+
+    def perform_create(self, serializer):
+        if self.request.user.is_superuser:
+            serializer.save()
+        else:
+            raise PermissionDenied("Only admins can create announcements")
+
+    def perform_destroy(self, instance):
+        if self.request.user.is_superuser:
+            instance.delete()
+        else:
+            raise PermissionDenied("Only admins can delete announcements")
+
+    def perform_update(self, serializer):
+        if self.request.user.is_superuser:
+            serializer.save()
+        else:
+            raise PermissionDenied("Only admins can update announcements")

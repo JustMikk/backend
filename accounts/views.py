@@ -11,7 +11,7 @@ class UsersGet(ModelViewSet):
     # permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        return User.objects.filter(passed=True)
+        return User.objects.filter(passed=True).order_by('-id')
 
 
 class UsersNotPassedGet(ModelViewSet):
@@ -19,4 +19,4 @@ class UsersNotPassedGet(ModelViewSet):
     # permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        return User.objects.filter(passed=False)
+        return User.objects.filter(passed=False).order_by('-id')

@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 from decouple import config
@@ -34,6 +35,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -45,12 +47,11 @@ MIDDLEWARE = [
 AUTH_USER_MODEL = "accounts.User"
 
 CORS_ALLOWED_ORIGINS = [
-    "http://*",
-    "https://*",
-    # "*",
+    "https://csec-sigma.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "http://localhost:5173",
-    # "http://192.168.116.208:5173"
-    # # "http://127.0.0.1:9000",
 ]
 
 CORS_ALLOW_METHODS = (
@@ -77,10 +78,11 @@ SIMPLE_JWT = {
 
 ROOT_URLCONF = 'api.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [os.path.join(BASE_DIR, "dist")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -141,7 +143,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'assets/'
+STATIC_ROOT = BASE_DIR / "static"
+STATICFILES_DIRS = [
+    # Tell Django where to look for React's static files (css, js)
+    os.path.join(BASE_DIR, "dist/assets"),
+]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
